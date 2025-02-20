@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Widget</title>
     <style>
-        /* Hide branding inside shadow DOM */
+        /* Attempt to hide branding with CSS */
+        elevenlabs-convai::part(powered-by),
         elevenlabs-convai::shadow .powered-by {
             display: none !important;
             visibility: hidden !important;
@@ -24,18 +25,28 @@
         document.head.appendChild(script);
       })();
 
-      // JavaScript method to remove branding dynamically
+      // Continuously check for branding text and remove it
+      function removeBranding() {
+          document.querySelectorAll("elevenlabs-convai").forEach(widget => {
+              let shadowRoot = widget.shadowRoot;
+              if (shadowRoot) {
+                  let branding = shadowRoot.querySelector("[class*='powered-by']");
+                  if (branding) {
+                      branding.style.display = "none"; // Hide it
+                  }
+              }
+          });
+      }
+
+      // Run function every 500ms until branding is removed
+      let brandingInterval = setInterval(() => {
+          removeBranding();
+      }, 500);
+
+      // Stop checking after 10 seconds (failsafe)
       setTimeout(() => {
-        document.querySelectorAll("elevenlabs-convai").forEach(widget => {
-            let shadowRoot = widget.shadowRoot;
-            if (shadowRoot) {
-                let poweredBy = shadowRoot.querySelector(".powered-by");
-                if (poweredBy) {
-                    poweredBy.remove();
-                }
-            }
-        });
-      }, 5000); // Waits for the widget to load before removing branding
+          clearInterval(brandingInterval);
+      }, 10000);
     </script>
 </body>
 </html>
